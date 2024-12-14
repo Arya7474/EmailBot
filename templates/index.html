@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Alert Management</title>
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css"
+      integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+</head>
+<body class="background-section">
+<div class="grid-container">
+<header class="text-gray-100 body-font header">
+  <div class="HeaderWrapper">
+    <div class="container mx-auto flex flex-wrap p-5 flex-col md:flex-row items-center">
+      <nav class="flex lg:w-2/5 items-center text-base md:ml-auto">
+        <button id="trigger-alert" class="inline-flex items-center bg-grey-200 border-1 py-2 px-4 focus:outline-none hover:bg-gray-300 rounded text-base mt-4 md:mt-0"><i class="fa-solid fa-music"></i>
+          </button>
+          <button id="start-backend" class="inline-flex items-center bg-grey-200 border-1 py-2 px-4 focus:outline-none hover:bg-gray-300 rounded text-base mt-4 md:mt-0">START-BACKEND
+        </button>
+        <button id="stop-backend" class="inline-flex items-center bg-grey-200 border-1 py-2 px-4 focus:outline-none hover:bg-gray-300 rounded text-base mt-4 md:mt-0">STOP-BACKEND
+        </button>
+        <button id="SidebarVisible" class="inline-flex items-center bg-grey-200 border-1 py-2 px-4 focus:outline-none hover:bg-gray-300 rounded text-base mt-4 md:mt-0">REPORT-LIST
+        </button>
+      </nav>
+      <a href="/" id="home-link" class="flex order-first lg:order-none lg:w-1/5 title-font font-medium items-center text-gray-900 lg:items-center lg:justify-center mb-4 md:mb-0">
+        <img src="{{ url_for('static', filename='rb_4103.png') }}" alt="Image Not Found" class="w-30 h-28">
+        <span class="dialog-box" id="status"></span>
+      </a>
+      <div class="lg:w-2/5 inline-flex lg:justify-end ml-5 lg:ml-0">
+        <button id="stop-alert" class="inline-flex items-center bg-grey-200 border-1 py-2 px-4 focus:outline-none hover:bg-gray-300 rounded text-base mt-4 md:mt-0">STOP-ALERT<svg class="w-4 h-4 ml-1" id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 122.88 122.88"><defs><style>.cls-1{fill:#ef4136;}.cls-1,.cls-2{fill-rule:evenodd;}.cls-2{fill:#ff7c73;}.cls-3{fill:#fff;}</style></defs><title>turn-off</title><path class="cls-1" d="M61.44,0A61.44,61.44,0,1,1,0,61.44,61.44,61.44,0,0,1,61.44,0Z"/><path class="cls-2" d="M61.44,2.25A59.15,59.15,0,0,1,120.59,61.4c0,.77,0,1.54,0,2.3a59.14,59.14,0,0,0-118.2,0c0-.76,0-1.53,0-2.3A59.15,59.15,0,0,1,61.44,2.25Z"/><path class="cls-3" d="M81,44.75a7.08,7.08,0,0,1,10.71-9.27,40,40,0,1,1-60.87.39A7.07,7.07,0,0,1,41.67,45,25.85,25.85,0,1,0,81,44.75ZM68.54,47.92a7.1,7.1,0,1,1-14.2,0V26.74a7.1,7.1,0,1,1,14.2,0V47.92Z"/></svg>
+          <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="w-4 h-4 ml-1" viewBox="0 0 24 24">
+            <path d="M5 12h14M12 5l7 7-7 7"></path>
+          </svg>
+        </button>
+      </div>
+  </div>
+</header>
+  <aside class="side">
+    <div id="ReportSidebarWrap" class="ReportSidebarWrap">
+      <div id="ReportSidebar" class="ReportSidebar"></div>
+          <div class="sidebar">
+              <h2>Reports by Date</h2>
+              <a href="/" id="cartClose"><i class="fa-regular fa-x"></i></a>
+              <ul>
+              <!-- Loop through dates to create links dynamically -->
+              {% for date, entries in reports.items() %}
+              <li>
+                  <a href="#" class="date-link" data-date="{{ date|replace(' ', '')|replace(':', '')|replace('+', '')|replace('-', '')|replace(',', '') }}">
+                  {{ date }}
+                  </a>
+              </li>
+              {% endfor %}
+              </ul>
+          </div>
+      </div>
+  </aside>
+  <main class="main">
+    <div class="content">
+      <div id="report-container">
+        
+      </div>
+    <!-- Hidden report sections dynamically loaded -->
+    <ul>
+      {% for date, entries in reports.items() %}
+      <div id="report-{{ date|replace(' ', '')|replace(':', '')|replace('+', '')|replace('-', '')|replace(',', '') }}" 
+      class="report-section" style="display: none;">
+        <h2>{{ date }}</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>From</th>
+              <th>Subject</th>
+              <th>Date & Time</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for entry in entries %}
+            <tr>
+              <td>{{ entry.from_email }}</td>
+              <td>{{ entry.subject }}</td>
+              <td>{{ entry.mail_datetime }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% endfor %}
+      </ul>
+    </div>
+    <!-- typing effect -->
+    <p id="typing-effect">
+      <span id="line1" class="line"></span>
+      <span id="line2" class="line"></span>
+    </p>
+  </main>
+  <footer class="footer">
+    <footer class="text-gray-600 body-font">
+      <div class="container px-5 py-8 mx-auto flex items-center sm:flex-row flex-col">
+        <a class="flex title-font font-medium items-center md:justify-start justify-center text-gray-100">
+          <img src="{{ url_for('static', filename='rb_4103.png') }}" alt="Image Not Found" class="w-12 h-12">
+          <span class="ml-3 text-xl">Email Bot</span>
+        </a>
+        <p class="text-sm text-gray-100 sm:ml-4 sm:pl-4 sm:border-l-2 sm:border-gray-200 sm:py-2 sm:mt-0 mt-4">© <span id="year"></span> Souvik Dhara — All rights reserved.
+          <a href="https://twitter.com/knyttneve" class="text-gray-600 ml-1" rel="noopener noreferrer" target="_blank"></a>
+        </p>
+        <span class="inline-flex sm:ml-auto sm:mt-0 mt-4 justify-center sm:justify-start">
+          <a class="text-gray-200 facebook-icon" href="https://www.facebook.com/souvik.dhara.547" target="_blank">
+            <svg fill="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="w-5 h-5" viewBox="0 0 24 24">
+              <path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"></path>
+            </svg>
+          </a>
+          <a class="ml-3 text-gray-200 instagram-icon" href="https://www.instagram.com/dharasouvik8967/" target="_blank">
+            <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="w-5 h-5" viewBox="0 0 24 24">
+              <rect width="20" height="20" x="2" y="2" rx="5" ry="5"></rect>
+              <path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37zm1.5-4.87h.01"></path>
+            </svg>
+          </a>
+          <a class="ml-3 text-gray-200 linkedin-icon" href="#" target="_blank">
+            <svg fill="currentColor" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="0" class="w-5 h-5" viewBox="0 0 24 24">
+              <path stroke="none" d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z"></path>
+              <circle cx="4" cy="4" r="2" stroke="none"></circle>
+            </svg>
+          </a>
+          <a class="ml-3 text-gray-200 youtube-icon" href="https://www.youtube.com/@BongMagician7474" target="_blank" rel="noopener noreferrer">
+            <svg fill="currentColor" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="0" class="w-5 h-5" viewBox="0 0 24 24">
+              <path stroke="none" d="M23.498 6.186a2.948 2.948 0 00-2.068-2.074C19.516 3.553 12 3.553 12 3.553s-7.516 0-9.43.559a2.948 2.948 0 00-2.068 2.074C.553 8.11.553 12 .553 12s0 3.89.548 5.814a2.948 2.948 0 002.068 2.074c1.915.558 9.43.558 9.43.558s7.516 0 9.43-.558a2.948 2.948 0 002.068-2.074c.548-1.924.548-5.814.548-5.814s0-3.89-.548-5.814zM9.753 15.207v-6.414l6.207 3.207-6.207 3.207z"></path>
+            </svg>
+          </a>
+        </span>
+      </div>
+    </footer>
+  </footer>
+</div>
+  <script>
+    const dateLinks = document.querySelectorAll(".date-link");
+    const reportContainer = document.getElementById("report-container");
+
+    // Add click event listeners to each date link
+    dateLinks.forEach(link => {
+      link.addEventListener("click", (e) => {
+        e.preventDefault();
+        const date = link.getAttribute("data-date");
+        const reportSection = document.querySelector(`#report-${date}`);
+
+        // Clear previous content
+        reportContainer.innerHTML = "";
+
+        // Hide all report sections
+        const allReportSections = document.querySelectorAll(".report-section");
+        allReportSections.forEach(section => {
+          section.style.display = "none";
+        });
+
+        if (reportSection) {
+          // Append the corresponding report
+          reportContainer.appendChild(reportSection.cloneNode(true));
+          reportContainer.style.display = "block"
+          reportSection.style.display = "block";
+        } else {
+          reportContainer.innerHTML = `<p>No reports available for ${date}.</p>`;
+        }
+      });
+    });
+
+    // Function to send POST requests for backend actions
+    async function postData(url) {
+      try {
+        const response = await fetch(url, { method: "POST" });
+        const data = await response.json();
+        document.getElementById("status").innerText = data.status;
+        document.getElementById("status").style.display = 'block';
+        document.getElementById("status").style.top = '20px'; // Make it appear from the top
+
+        // Hide the popup after 3 seconds
+        setTimeout(() => {
+          document.getElementById("status").style.top = '-20px'; // Move it back out of view
+          document.getElementById("status").style.display = 'none'; // Hide it
+        }, 2000);
+
+      } catch (error) {
+        document.getElementById("status").innerText = "Error communicating with backend.";
+        console.error(error);
+      }
+    }
+    // home redirection throug icon
+    document.getElementById("home-link").addEventListener("click", function (e) {
+      // Prevent any default action if overridden
+      e.preventDefault();
+      window.location.href = "/";
+    });
+
+    // updating year in footer section
+    document.getElementById("year").textContent = new Date().getFullYear();
+
+    // Attach event listeners to backend buttons
+    document.getElementById("trigger-alert").addEventListener("click", () => postData("/trigger"));
+    document.getElementById("stop-alert").addEventListener("click", () => postData("/stop"));
+    document.getElementById("start-backend").addEventListener("click", () => postData("/start_backend"));
+    document.getElementById("stop-backend").addEventListener("click", () => postData("/stop_backend"));
+
+// char moving effect
+     // Get the elements for both lines
+const line1 = document.getElementById('line1');
+const line2 = document.getElementById('line2');
+
+// Texts for each line
+const texts = [
+  "Welcome to Email Bot!",  // First line
+  "Select A Date To View The Reports"  // Second line
+];
+
+let charIndex = [0, 0];  // Track the character index for both lines
+let lineIndex = 0;  // Track which line we're currently typing
+let typing = true;  // Flag to control the typing process
+
+// Function to type the text letter by letter
+function addChar() {
+  if (!typing) return;  // If typing is paused, don't continue
+
+  // Update the text for the current line
+  line1.textContent = texts[0].slice(0, charIndex[0] + 1);  // First line
+  line2.textContent = texts[1].slice(0, charIndex[1] + 1);  // Second line
+
+  // If the current line has more characters to type, continue
+  if (charIndex[lineIndex] < texts[lineIndex].length - 1) {
+    charIndex[lineIndex]++;
+    setTimeout(addChar, 50);  // Continue typing the next letter
+  } else {
+    // Once the current line finishes, show the second line and start typing it
+    if (lineIndex === 0) {
+      // Reveal the second line only after the first line finishes typing
+      line2.style.visibility = 'visible';
+      lineIndex = 1;  // Move to the second line
+      charIndex[1] = 0;  // Reset character index for second line
+      setTimeout(addChar, 50);  // Wait for a short delay before starting the second line
+    } else {
+      // Once both lines are done, restart typing after a brief delay
+      setTimeout(() => {
+        charIndex = [0, 0];  // Reset both lines' character indexes
+        lineIndex = 0;  // Start with the first line again
+        line1.style.visibility = 'visible';  // Ensure first line is visible
+        line2.style.visibility = 'hidden';  // Hide the second line before starting again
+        addChar();  // Restart typing after a brief delay
+      }, 500);  // Wait for 1 second before restarting
+    }
+  }
+}
+
+// Start the typing effect
+line1.style.visibility = 'visible';  // Reveal the first line
+addChar();
+
+// sidebar logic - SHOW
+document.getElementById("SidebarVisible").onclick = function () {
+      document.getElementById("ReportSidebarWrap").classList.add("visibilityWrap");
+      document.getElementById("ReportSidebar").classList.add("newsfeedtop");
+      typing = false;
+      line1.textContent = '';  // Clear the text of the first line
+      line2.textContent = '';  // Clear the text of the second line
+    };
+    // sidebar logic - HIDE
+    document.getElementById("cartClose").onclick = function () {
+      document.getElementById("ReportSidebarWrap").classList.remove("visibilityWrap");
+      document.getElementById("ReportSidebar").classList.remove("newsfeedtop");
+      typing = true;  // Resume typing
+      addChar();  // Restart the typing effect if paused
+    };
+  </script>
+</body>
+</html>
