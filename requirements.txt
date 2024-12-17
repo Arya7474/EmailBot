@@ -1,0 +1,5 @@
+Flask
+pygame
+requests
+pytz
+pyinstaller

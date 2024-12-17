@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Failure</title>
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css"
+      integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+</head>
+<body class="background-section">
+  <div class="grid-container">
+    <header class="text-gray-100 body-font header">
+      <div class="HeaderWrapper">
+        <div class="container mx-auto flex flex-wrap p-5 flex-col md:flex-row items-center">
+          <nav class="flex lg:w-2/5 items-center text-base md:ml-auto">
+          </nav>
+          <a href="/" id="home-link" class="flex order-first lg:order-none lg:w-1/5 title-font font-medium items-center text-gray-900 lg:items-center lg:justify-center mb-4 md:mb-0">
+            <img src="{{ url_for('static', filename='rb_4103.png') }}" alt="Image Not Found" class="w-30 h-28">
+          </a>
+        </div>
+      </div>
+    </header>
+    <main id="failure">
+        <h1>Configuration Update Failed!!! Error Msg: {{ message }}</h1>
+        <br>
+        <p>Click The Bot To Go Back To Home Page</p>
+    </main>
+  </div>
+  <script src="{{ url_for('static', filename='index.js') }}"></script>
+</body>
+</html>
