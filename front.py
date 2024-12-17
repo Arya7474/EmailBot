@@ -8,13 +8,13 @@ import db
 # app = Flask(__name__)
 app = Flask(
     __name__,
-    template_folder="/Users/scorvicsdomain/emailBot/templates",
-    static_folder="/Users/scorvicsdomain/emailBot/static",
+    template_folder="/Users/scorvicsdomain/test/EmailBot/templates",
+    static_folder="/Users/scorvicsdomain/test/EmailBot/static",
 )
 
-BACKEND_SCRIPT_PATH = "/Users/scorvicsdomain/emailBot/back.py"
-PID_FILE = "/Users/scorvicsdomain/emailBot/backend_process.pid"
-ERROR_FILE = "/Users/scorvicsdomain/emailBot/error_message.txt"
+BACKEND_SCRIPT_PATH = "/Users/scorvicsdomain/test/EmailBot/back.py"
+PID_FILE = "/Users/scorvicsdomain/test/EmailBot/backend_process.pid"
+ERROR_FILE = "/Users/scorvicsdomain/test/EmailBot/error_message.txt"
 
 pygame.mixer.init()
 
@@ -84,7 +84,7 @@ def stop_alert():
 
 @app.route("/trigger", methods=["POST"])
 def trigger_alert():
-    play_sound("/Users/scorvicsdomain/emailBot/alert.mp3")  
+    play_sound("/Users/scorvicsdomain/test/EmailBot/alert.mp3")  
     return {"status": "Alert playing!"}, 200
 
 # handle the login error from backend
