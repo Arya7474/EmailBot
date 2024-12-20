@@ -1,0 +1,38 @@
+Mail Monitoring and Alert System
+
+This project scans your email inbox for client mails, sends instant alerts upon detection, and maintains a log of all alerts for generating reports. Additionally, it includes server monitoring and a user authentication mechanism.
+
+How to Start
+Clone the Repository
+
+Open the project directory in Visual Studio Code.
+Open the integrated terminal (Ctrl + ~), and create two terminal tabs:
+One for the Flask server.
+One for server monitoring.
+
+In the first terminal tab, run the setup script to initialize the Flask server, install dependencies, and set up the project:
+bash Setup.sh
+This will automatically start the Flask server.
+
+
+Edit Credentials for Monitoring
+Open the monitoring.py file in the project directory.
+Add your email credentials in the required sections.
+Run monitoring.py
+
+In the second terminal tab, run the monitoring script:
+python3 monitoring.py
+Functionality:
+Every 30 minutes, this script checks if the server is running.
+If the server stops, it sends an email alert.
+It logs the server's status and timestamp in the server_status.log file located in the same directory.
+
+
+Access the Application
+Open your web browser and go to:
+http://localhost:5000
+
+
+Notes
+Ensure your email credentials are correctly configured in monitoring.py.
+The Flask server and the monitoring script should always run in separate terminals.
