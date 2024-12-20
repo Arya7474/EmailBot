@@ -2,15 +2,16 @@
 
 This project scans your **email inbox** for client mails, sends **instant alerts** upon detection, and maintains a **log of alerts** for generating reports. Additionally, it includes **server monitoring** and a **user authentication mechanism**.
 
-💡 Technologies Used
-Python 3.8+
-Flask Framework
-SMTP Email Service
-Logging Module
-Html
-Css
-JavaScript
-Sqlite3
+### 💡 **Technologies Used**
+- **Python**
+- **Flask Framework**
+- **SMTP Email Service**
+- **Logging Module**
+- **HTML**
+- **CSS**
+- **JavaScript**
+- **SQLite3**
+
 
 ## 🚀 **How to Start**
 
@@ -37,9 +38,9 @@ In the second terminal tab, run the monitoring script:
 
 
 ### 🛠️ **Features**
-Every 30 minutes, this script checks if the server is running.
-If the server stops, it sends an email alert.
-It logs the server's status and timestamp in the server_status.log file located in the same directory.
+- Every 30 minutes, this script checks if the server is running.
+- If the server stops, it sends an email alert.
+- It logs the server's status and timestamp in the **server_status.log** file located in the same directory.
 
 
 ### 6️⃣ **Access the Application**
@@ -49,5 +50,5 @@ Open your web browser and go to:
 
 
 ## 📌 **Notes**
-Ensure your email credentials are correctly configured in monitoring.py.
-The Flask server and the monitoring script should always run in separate terminals.
+- Ensure your email credentials are correctly configured in **monitoring.py**.
+- The Flask server and the monitoring script should always run in separate terminals.
