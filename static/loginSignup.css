@@ -1,0 +1,108 @@
+body {
+    font-family: monospace;
+    height: 100vh;
+    display: grid;
+    place-items: center;
+    margin: 0;
+    background-image: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), 
+                      url(/static/2909200.jpg);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    color: #fff; /* Makes all text white by default */
+}
+
+.login-container {
+    background: rgb(0 0 0 / 49%);
+    padding: 30px 40px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgb(0 0 0 / 56%);
+    width: 100%;
+    max-width: 460px;
+    color: #fff;
+}
+
+.login-container h2 {
+    margin-bottom: 20px;
+    font-size: 28px;
+    color: #fff; /* Ensures the heading text is white */
+    text-align: center;
+}
+
+.form-group {
+    margin-bottom: 20px; /* Adds more spacing between fields */
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: #fff; /* White label text */
+    font-size: 16px;
+}
+
+.form-group input {
+    width: 95%;
+    padding: 12px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    background-color: rgba(255, 255, 255, 0.2); /* Semi-transparent input background */
+    color: #fff; /* White text for input fields */
+    caret-color: #fff; /* White cursor */
+    outline: none;
+    transition: border-color 0.3s ease;
+}
+
+.form-group input::placeholder {
+    color: rgba(255, 255, 255, 0.7); /* White placeholder with slight transparency */
+    font-size: 14px;
+}
+
+
+input:focus, textarea:focus, button:focus {
+    outline: none; 
+  }
+
+.error {
+    color: #fff;
+    font-size: 14px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.login-btn {
+    width: 100%;
+    padding: 12px;
+    background-color: #1DA1F2; /* Light blue button color */
+    border: none;
+    border-radius: 5px;
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.login-btn:hover {
+    background-color: #1486cc; /* Slightly darker blue on hover */
+}
+
+.Bot-Icon {
+    width: 60px;
+    height: auto;
+    margin: 0 auto 20px; /* Centers the icon and adds spacing */
+    display: block;
+}
+
+p {
+    text-align: center;
+    margin-top: 20px;
+}
+
+p a {
+    color: #1DA1F2; /* Light blue link color */
+    text-decoration: none;
+}
+
+p a:hover {
+    text-decoration: underline;
+}

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Alert Management</title>
+  <title>Email Bot</title>
   <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
   <script src="https://cdn.tailwindcss.com"></script>
   <link
@@ -44,22 +44,23 @@
     </header>
     <aside class="side">
       <!-- Hidden error dialog -->
-  <div id="error-dialog">
-    <p id="error-message"></p>
-    <button onclick="dismissDialog()">Dismiss</button>
-  </div>
+      <div id="error-dialog">
+        <p id="error-message"></p>
+        <button onclick="dismissDialog()">Dismiss</button>
+      </div>
       <div id="ReportSidebarWrap" class="ReportSidebarWrap">
         <div id="ReportSidebar" class="ReportSidebar"></div>
             <div class="sidebar">
-                <h2>Reports by Date</h2>
+                <h2>Filter By Dates</h2>
+                <div id="filter_report">
+                  <label class="filter_report"><input type="radio" name="filter" value="daily"> Daily</label>
+                  <label class="filter_report"><input type="radio" name="filter" value="weekly"> Weekly</label>
+                  <label class="filter_report"><input type="radio" name="filter" value="monthly"> Monthly</label>
+                  <!-- <label class="filter_report"><input type="radio" name="filter" value="yearly"> Yearly</label> -->
+                </div>
                 <a href="/" id="cartClose"><i class="fa-regular fa-x"></i></a>
                 <ul>
                 {% for date, entries in reports.items() %}
-                <li>
-                    <a href="#" class="date-link" data-date="{{ date|replace(' ', '')|replace(':', '')|replace('+', '')|replace('-', '')|replace(',', '') }}">
-                    {{ date }}
-                    </a>
-                </li>
                 {% endfor %}
                 </ul>
             </div>
@@ -101,33 +102,12 @@
           </form>
         </div>
         <!-- Hidden report sections dynamically loaded -->
-        <ul>
-          {% for date, entries in reports.items() %}
-          <div id="report-{{ date|replace(' ', '')|replace(':', '')|replace('+', '')|replace('-', '')|replace(',', '') }}" 
-          class="report-section" style="display: none;">
-            <h2>{{ date }}</h2>
-            <table>
-              <thead>
-                <tr>
-                  <th>From</th>
-                  <th>Subject</th>
-                  <th>Date & Time</th>
-                </tr>
-              </thead>
-              <tbody>
-                {% for entry in entries %}
-                <tr>
-                  <td>{{ entry.from_email }}</td>
-                  <td>{{ entry.subject }}</td>
-                  <td>{{ entry.mail_datetime }}</td>
-                </tr>
-                {% endfor %}
-              </tbody>
-            </table>
-          </div>
-          {% endfor %}
-          </ul>
+        <ul id="hiddenul">
+          
+        </ul>
       </div>
+      <!-- <div id="username-container" data-username="{{ username }}"></div> -->
+      <img id="username-container" data-username="{{ username }}" src="{{ url_for('static', filename='wave.gif') }}" alt="Image Not Found">
       <!-- typing effect -->
       <p id="typing-effect">
         <span id="line1" class="line"></span>

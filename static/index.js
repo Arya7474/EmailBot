@@ -1,29 +1,3 @@
-const dateLinks = document.querySelectorAll(".date-link");
-const reportContainer = document.getElementById("report-container");
-
-dateLinks.forEach(link => {
-    link.addEventListener("click", (e) => {
-        e.preventDefault();
-        const date = link.getAttribute("data-date");
-        const reportSection = document.querySelector(`#report-${date}`);
-
-        reportContainer.innerHTML = "";
-
-        const allReportSections = document.querySelectorAll(".report-section");
-        allReportSections.forEach(section => {
-            section.style.display = "none";
-        });
-
-        if (reportSection) {
-            reportContainer.appendChild(reportSection.cloneNode(true));
-            reportContainer.style.display = "block"
-            reportSection.style.display = "block";
-        } else {
-            reportContainer.innerHTML = `<p>No reports available for ${date}.</p>`;
-        }
-    });
-});
-
 async function postData(url) {
     try {
         const response = await fetch(url, { method: "POST" });
@@ -49,7 +23,6 @@ document.getElementById("home-link").addEventListener("click", function (e) {
 });
 
 document.getElementById("year").textContent = new Date().getFullYear();
-
 document.getElementById("trigger-alert").addEventListener("click", () => postData("/trigger"));
 document.getElementById("stop-alert").addEventListener("click", () => postData("/stop"));
 document.getElementById("start-backend").addEventListener("click", () => postData("/start_backend"));
@@ -58,9 +31,13 @@ document.getElementById("stop-backend").addEventListener("click", () => postData
 // char moving effect
 const line1 = document.getElementById('line1');
 const line2 = document.getElementById('line2');
+const usernameContainer = document.getElementById('username-container');
+const username = usernameContainer.dataset.username;
+// console.log(`Username: ${username}`);
+
 
 const texts = [
-    "Welcome to Email Bot!",  
+    `Welcome to Email Bot ${username}`,   
     "You Can Sleep Peacefully While I am Awake for you."  
 ];
 
@@ -204,20 +181,16 @@ async function pollForErrors() {
 
 
 // pull-config in form
-// Get the toggle button and input fields
 const toggleConfig = document.getElementById('toggleConfig');
 const emailInput = document.getElementById('email');
 const appPasswordInput = document.getElementById('app-password');
 const manualEntryInput = document.getElementById('manual-entry');
 
-// Event listener for the toggle button
 toggleConfig.addEventListener('change', async function () {
     try {
-        // Check if toggle is on or off
         const isChecked = this.checked;
         
         if (isChecked) {
-            // Fetch latest configuration when toggle is ON
             const response = await fetch("/get_latest_config", {
                 method: "GET",
                 headers: {
@@ -225,33 +198,27 @@ toggleConfig.addEventListener('change', async function () {
                 },
             });
 
-            // If the response is successful, update the UI fields
             if (response.ok) {
                 const data = await response.json();
                 console.log("Response Data:", data);
 
-                // Update input fields with the fetched data
                 emailInput.value = data.email_id || "";
                 appPasswordInput.value = data.app_password || "";
                 
-                // If mail_to_check is an array, join it into a string for textarea field
                 if (Array.isArray(data.mail_to_check)) {
                     manualEntryInput.value = data.mail_to_check.join(", ");
                 } else {
                     manualEntryInput.value = "";
                 }
             } else {
-                // If response is not OK, show an alert or handle error
                 alert("configuration not present inside DB, Please add First!");
             }
         } else {
-            // If toggle is OFF, clear input fields
             emailInput.value = "";
             appPasswordInput.value = "";
             manualEntryInput.value = "";
         }
     } catch (error) {
-        // Handle any errors that occur during the fetch operation
         console.error("Error Fetching Config:", error);
         alert("Error fetching configuration.");
     }
@@ -263,7 +230,6 @@ function togglePasswordVisibility() {
     // const eyeIcon = document.getElementById('eyeIcon');
     const eyeImg = document.getElementById('eyeImg');
     
-    // Toggle the type between password and text
     if (passwordInput.type === 'password') {
       passwordInput.type = 'text';
       eyeImg.src = '/static/output-onlinegiftools.gif';
@@ -272,4 +238,137 @@ function togglePasswordVisibility() {
       eyeImg.src = '/static/output-onlinegiftools.gif';
     }
   }
+
+/////////////////////////////// filtering of the reports ///////////////////////////
+
+const reportContainer = document.getElementById("report-container");
+const filterReportRadios = document.querySelectorAll("input[name='filter']");
+const sidebarUl = document.querySelector(".sidebar ul");
+
+function updateReports(data) {
+    sidebarUl.innerHTML = "";
+    reportContainer.innerHTML = "";
+
+    const sortedDates = Object.keys(data).sort((a, b) => {
+        const dateA = parseDate(a);
+        const dateB = parseDate(b);
+        return dateA - dateB;
+    });
+
+    sortedDates.forEach(date => {
+        const entries = data[date];
+
+        const dateLink = document.createElement("li");
+        dateLink.innerHTML = `<a href="#" class="date-link" data-date="${date.replace(/[\s:,+-]/g, '')}">${date}</a>`;
+        sidebarUl.appendChild(dateLink);
+
+        const reportSection = document.createElement("div");
+        reportSection.id = `report-${date.replace(/[\s:,+-]/g, '')}`;
+        reportSection.classList.add("report-section");
+        reportSection.style.display = "none";
+
+        reportSection.innerHTML = `
+            <h2>${date}</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>From</th>
+                        <th>Subject</th>
+                        <th>Date & Time</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${entries
+                        .map(
+                            entry =>
+                                `<tr>
+                                    <td>${entry.from_email}</td>
+                                    <td>${entry.subject}</td>
+                                    <td>${entry.mail_datetime}</td>
+                                </tr>`
+                        )
+                        .join("")}
+                </tbody>
+            </table>
+        `;
+
+        document.getElementById("hiddenul").appendChild(reportSection); 
+    });
+
+    initDateLinkEvents();
+}
+
+function parseDate(dateStr) {
+    const dailyFormat = /^\d{2} [A-Za-z]{3} \d{4}$/; // Example: "01 Aug 2024"
+    const monthlyFormat = /^[A-Za-z]+ \d{4}$/; // Example: "August 2024"
+    const yearlyFormat = /^\d{4}$/; // Example: "2024"
+
+    if (dailyFormat.test(dateStr)) {
+        return new Date(dateStr); 
+    } else if (monthlyFormat.test(dateStr)) {
+        return new Date(`01 ${dateStr}`); 
+    } else if (yearlyFormat.test(dateStr)) {
+        return new Date(`01 Jan ${dateStr}`); 
+    } else {
+        return new Date(); 
+    }
+}
+
+async function fetchFilteredReports(filter) {
+    try {
+        const response = await fetch("/filter_reports", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ filter })
+        });
+
+        const data = await response.json();
+
+        if (data.status === "success") {
+            updateReports(data.reports); 
+        } else {
+            reportContainer.innerHTML = `<p>${data.message}</p>`;
+        }
+    } catch (error) {
+        console.error("Error fetching filtered reports:", error);
+        reportContainer.innerHTML = `<p>Error fetching reports.</p>`;
+    }
+}
+
+function initDateLinkEvents() {
+    const dateLinks = document.querySelectorAll(".date-link");
+
+    dateLinks.forEach(link => {
+        link.addEventListener("click", (e) => {
+            e.preventDefault();
+            const date = link.getAttribute("data-date");
+            const reportSection = document.querySelector(`#report-${date}`);
+
+            reportContainer.innerHTML = "";
+
+            const allReportSections = document.querySelectorAll(".report-section");
+            allReportSections.forEach(section => {
+                section.style.display = "none";
+            });
+
+            if (reportSection) {
+                reportContainer.appendChild(reportSection.cloneNode(true));
+                reportContainer.style.display = "block";
+                reportSection.style.display = "block";
+            } else {
+                reportContainer.innerHTML = `<p>No reports available for ${date}.</p>`;
+            }
+        });
+    });
+}
+
+filterReportRadios.forEach(radio => {
+    radio.addEventListener("change", (e) => {
+        const filter = e.target.value; 
+        fetchFilteredReports(filter);
+    });
+});
+
+initDateLinkEvents();
+
 

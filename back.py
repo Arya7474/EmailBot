@@ -18,7 +18,6 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
 def send_frontend_alert(message: str) -> None:
-    """Send alert to frontend with error handling."""
     try:
         response = requests.post(
             FRONTEND_TRIGGER_URL,
@@ -30,7 +29,6 @@ def send_frontend_alert(message: str) -> None:
         logger.error(f"Failed to send frontend alert: {e}")
 
 def send_ERROR(message: str) -> None:
-    """Send alert to frontend with error handling."""
     try:
         response = requests.post(
             ERROR_MSG_URL,
@@ -42,7 +40,6 @@ def send_ERROR(message: str) -> None:
         logger.error(f"Failed to send frontend alert: {e}")
 
 def extract_email(address):
-    """Extract email address from a string."""
     if '<' in address and '>' in address:
         start_idx = address.find('<') + 1
         end_idx = address.find('>')
@@ -59,8 +56,11 @@ def fetch_and_search_emails(EMAIL,PASSWORD,mail_to_check,IST,server):
             print(f"Login Failed")
             return
         mail.select("inbox")
+        # search_query = f'OR {" ".join([f"FROM {email}" for email in mail_to_check])}'
+        # result, data = mail.search(None, search_query)
         result, data = mail.search(None, "ALL")
         email_ids = data[0].split()
+        # print(f"length of the id is {len(email_ids)}")
         
         last_100_ids = email_ids[-100:]
         if not last_100_ids:
@@ -85,12 +85,11 @@ def fetch_and_search_emails(EMAIL,PASSWORD,mail_to_check,IST,server):
 
                 if date != 'Unknown Date':
                     email_date = parsedate_to_datetime(date).astimezone(IST)
-                    date_str = email_date.strftime('%Y-%m-%d %H:%M:%S %Z')  # Format: YYYY-MM-DD HH:MM:SS IST
+                    date_str = email_date.strftime('%Y-%m-%d %H:%M:%S %Z')  # YYYY-MM-DD HH:MM:SS IST
                     # current_dates.append(date_str)
                 else:
                     date_str = "Unknown Date"
                 current_emails.append((sender, to_email, subject, date_str))
-                # Check if sender email matches any in mail_to_check
                 if any(email_id in sender for email_id in mail_to_check):
                     if not db.is_email_in_db(sender, to_email, subject, date_str):
                         print(f"{sender} is present in the list. Triggering alert!")
@@ -104,6 +103,7 @@ def fetch_and_search_emails(EMAIL,PASSWORD,mail_to_check,IST,server):
     
     except Exception as e:
         print(f"An error occurred: {e}")
+        send_ERROR(f"Login Failed,Check network connection | see server logs | restart the server")
     finally:
         try:
             mail.logout()

@@ -4,6 +4,7 @@ from collections import OrderedDict
 import json
 import pytz
 import re
+from werkzeug.security import generate_password_hash, check_password_hash
 
 DB_PATH = "email_matches.db"
 
@@ -148,30 +149,12 @@ def is_email_in_db(from_email, to_email, subject, date):
     conn.close()
     return result is not None
 
-# def remove_duplicates(data):
-#     """Remove duplicate entries and sort the dictionary by date."""
-#     cleaned_data = {}
-
-#     for date, entries in data.items():
-#         unique_entries = set() 
-#         cleaned_data[date] = []
-
-#         for entry in entries:
-#             entry_tuple = (entry["from_email"], entry["subject"], entry["mail_datetime"])
-            
-#             if entry_tuple not in unique_entries:
-#                 unique_entries.add(entry_tuple) 
-#                 cleaned_data[date].append(entry) 
-
-#     sorted_cleaned_data = OrderedDict(sorted(cleaned_data.items()))
-
-#     return sorted_cleaned_data
-
-def fetch_reports():
-    """Fetch reports grouped by date from the database."""
-    create_matched_data_report_table()
+def fetch_reports(time_filter="daily"):
+    """Fetch and group reports by date, week, month, or year."""
+    create_matched_data_report_table()  
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
+
     query = """
     SELECT 
         date AS report_date, 
@@ -186,28 +169,38 @@ def fetch_reports():
     cursor.execute(query)
     data = cursor.fetchall()
     conn.close()
-    # print(data)
+
     grouped_data = {}
     for row in data:
         report_date, from_email, to_email, subject = row
 
         if "GMT" in report_date:
-             report_date = report_date.replace("GMT", "+0000")
+            report_date = report_date.replace("GMT", "+0000")
 
         clean_date = report_date.split("(")[0].strip()
         dt = datetime.strptime(clean_date, "%a, %d %b %Y %H:%M:%S %z")
 
-        report_date_str = dt.astimezone().strftime("%d %b %Y")
-        
-        if report_date_str not in grouped_data:
-            grouped_data[report_date_str] = []
-        grouped_data[report_date_str].append({
+        if time_filter == "daily":
+            group_key = dt.astimezone().strftime("%d %b %Y") 
+        elif time_filter == "weekly":
+            group_key = f"Week {dt.isocalendar()[1]}, {dt.year}"  
+        elif time_filter == "monthly":
+            group_key = dt.astimezone().strftime("%B %Y")  
+        elif time_filter == "yearly":
+            group_key = dt.astimezone().strftime("%Y")  
+        else:
+            group_key = dt.astimezone().strftime("%d %b %Y")  
+
+        if group_key not in grouped_data:
+            grouped_data[group_key] = []
+        grouped_data[group_key].append({
             "from_email": from_email,
             "subject": subject,
             "mail_datetime": report_date,
         })
-    # cleaned_data = remove_duplicates(grouped_data)
+
     return grouped_data
+
 
 def fetch_config():
     """Fetch the latest config from the database."""
@@ -225,5 +218,41 @@ def fetch_config():
         }
     return None
 
+# user authentication
 
+def create_users_table():
+    conn = sqlite3.connect(DB_PATH)
+    c = conn.cursor()
+    c.execute("""
+    CREATE TABLE IF NOT EXISTS users (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        username TEXT UNIQUE NOT NULL,
+        password TEXT NOT NULL
+    )""")
+    conn.commit()
+    conn.close()
+
+def add_user(username, password):
+    conn = sqlite3.connect(DB_PATH)
+    c = conn.cursor()
+    hashed_password = generate_password_hash(password, method='pbkdf2:sha256')
+    try:
+        c.execute("INSERT INTO users (username, password) VALUES (?, ?)", (username, hashed_password))
+        conn.commit()
+        return True
+    except sqlite3.IntegrityError:  
+        return False
+    finally:
+        conn.close()
+
+def verify_user(username, password):
+    conn = sqlite3.connect(DB_PATH)
+    c = conn.cursor()
+    c.execute("SELECT password FROM users WHERE username = ?", (username,))
+    row = c.fetchone()
+    conn.close()
+    if row:
+        stored_password = row[0]
+        return check_password_hash(stored_password, password)
+    return False
 

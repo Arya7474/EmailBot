@@ -10,14 +10,18 @@ source /venv/bin/activate
 
 pip install -r requirements.txt || pip3 install -r requirements.txt
 
+cmd_path=$(which python || which python3)
+
 export BACKEND_SCRIPT_PATH="$PROJECT_PATH/back.py"
 export PID_FILE="$PROJECT_PATH/backend_process.pid"
 export ERROR_FILE="$PROJECT_PATH/error_message.txt"
 export ALERT_FILE="$PROJECT_PATH/alert.mp3"
+export ERALT="$PROJECT_PATH/error.mp3"
 export TEMPLATE_PATH="$PROJECT_PATH/templates"
 export STATIC_PATH="$PROJECT_PATH/static"
+export SECRET_KEY=$($cmd_path -c 'import os; print(os.urandom(24).hex())')
 
-cmd_path=$(which python || which python3)
+
 $cmd_path "$PROJECT_PATH/front.py"
 
 

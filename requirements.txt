@@ -2,3 +2,4 @@ Flask
 pygame
 requests
 pytz
+werkzeug
