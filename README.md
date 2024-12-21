@@ -16,6 +16,7 @@ This project scans your **email inbox** for client mails, sends **instant alerts
 ## 🚀 **How to Start**
 
 ### 1️⃣ **Clone the Repository**
+    git clone -b EmailBotVersion3_newFeatures https://github.com/Arya7474/EmailBot.git 
 
 ### 2️⃣ **Open in VS Code**
 Open the project directory in Visual Studio Code.
