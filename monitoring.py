@@ -16,7 +16,25 @@ SMTP_SERVER = "smtp.gmail.com"
 SMTP_PORT = 587
 CHECK_INTERVAL = 10 
 WRITE_LOG_INTERVAL = 1800
+ZENDUTY_INTEGRATION_KEY = "d58c08d0-75f7-4c48-8220-422b51b31847"
+ZENDUTY_URL = f"https://events.zenduty.com/api/events/{ZENDUTY_INTEGRATION_KEY}/"
 
+def send_zenduty_alert():
+    headers = {"Content-Type": "application/json"}
+    payload = {
+        "alert_type": "critical",
+        "message": "Wake up Sir!! Server Is Not Running.",
+        "summary": "System alert triggered",
+        "entity_id": "alert_12345"
+    }
+    try:
+        response = requests.post(ZENDUTY_URL, headers=headers, json=payload)
+        response.raise_for_status()
+        print("Zenduty alert sent successfully!")
+        return {"status": "success", "response": response.json()}
+    except requests.exceptions.RequestException as e:
+        print(f"Error sending Zenduty alert: {e}")
+        return {"status": "error", "error": str(e)}
 
 def send_email_alert(subject, message):
     if not EMAIL_ALERTS_ENABLED:
@@ -60,11 +78,11 @@ def monitor_server():
             print("Server is running.")
         else:
             print("Server is down! Sending alert...")
-            send_email_alert(
-                "Flask Server Down Alert",
-                f"The Flask server at {SERVER_URL} is not responding. Please investigate immediately",
-            )
-
+            # send_email_alert(
+            #     "Flask Server Down Alert",
+            #     f"The Flask server at {SERVER_URL} is not responding. Please investigate immediately",
+            # )
+            send_zenduty_alert()
         if time.time() - last_log_time >= WRITE_LOG_INTERVAL:
             log_status()
             last_log_time = time.time()
