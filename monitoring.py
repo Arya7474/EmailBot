@@ -16,7 +16,7 @@ SMTP_SERVER = "smtp.gmail.com"
 SMTP_PORT = 587
 CHECK_INTERVAL = 10 
 WRITE_LOG_INTERVAL = 1800
-ZENDUTY_INTEGRATION_KEY = "d58c08d0-75f7-4c48-8220-422b51b31847"
+ZENDUTY_INTEGRATION_KEY = "" #replace with zenduty cred.
 ZENDUTY_URL = f"https://events.zenduty.com/api/events/{ZENDUTY_INTEGRATION_KEY}/"
 
 def send_zenduty_alert():
